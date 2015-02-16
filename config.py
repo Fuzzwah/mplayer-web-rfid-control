@@ -22,6 +22,7 @@ if not os.path.isfile(__file__):
 	config['Paths']['messages'] = ''
 	
 	config['System'] = {}
+	config['System']['port']
 	config['System']['rfidreader'] = '/dev/input/event0'
 	config['System']['database'] = 'cards.sqlite'
 	config.write()

@@ -111,16 +111,16 @@ def main(raw_args):
 	log.debug('initialized')
 	
 	# this is the rfid reader
-	dev = InputDevice(cfg.rfidreader)
+	dev = InputDevice(cfg.config['System']['rfidreader'])
 
 	# grab the rfid reader device
 	dev.grab()
 
 	cardnumber = []
 
-	if args.item.find(cfg.playlistpath) > -1:
+	if args.item.find(cfg.config['Paths']['playlist']) > -1:
 		item_type = "playlist"
-	elif args.item.find(cfg.musicbasepath) > -1:
+	elif args.item.find(cfg.config['Paths']['music']) > -1:
 		item_type = "folder"
 	else:
 		print("%s is in neither the music or playlist paths" % args.item)
@@ -128,7 +128,7 @@ def main(raw_args):
 
 	print("Swipe the card you wish to assign to item: %s" % args.item)
 
-	db = sqlite3.connect(cards_db)
+	db = sqlite3.connect(cfg.config['System']['database'])
 	c = db.cursor()
 
 	# wait for events from the rfid reader

@@ -32,11 +32,12 @@ def nameToTitle(filename):
     return re.sub(" [ _-]+", " - ", re.sub("[-_]", " ", os.path.basename(filename).title()))
 
 def entryToDict(entry):
-    name, ext = os.path.splitext(entry)
-    if not name == "messages" and not ext == "directory": # Fuz hax to stop the messages directory being listed
-		if ext == '':
+	if not entry == "messages":
+		if os.path.isdir(entry):
+			name = entry
 			ext = "directory"
 		else:
+			name, ext = os.path.splitext(entry)
 			ext = ext[1:]
 		return {'path': entry, 'type': ext, 'name': nameToTitle(name), 'buttons': True}
 
