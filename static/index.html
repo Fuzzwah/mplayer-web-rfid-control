@@ -15,8 +15,8 @@
 	    <button class="shuffle btn" ng-click="shuffle(file.path)"><i class="fa fa-random fa-lg"></i></button>
 	    <a class="dir-link" ng-click="navigate(file.path)">{{file.name}}</a><i class="fa fa-folder-open fa-lg child"></i>
 	  </span>
-	  <a class="dir-link buttonless" ng-switch-when="return" ng-click="navigate(file.path)">{{file.name}}</a>
-	  <a class="file-link" ng-switch-default ng-click="play(file.path)">{{file.name}}</a><i class="fa fa-music fa-lg child"></i>
+	  <a class="dir-link buttonless" ng-switch-when="return" ng-click="navigate(file.path)">{{file.name}}</a><i ng-switch-when="return" class="fa fa-folder-open fa-lg child"></i>
+	  <a class="file-link" ng-switch-default ng-click="play(file.path)">{{file.name}}</a><i ng-switch-default class="fa fa-music fa-lg child"></i>
 	</li>
       </ul>
       
