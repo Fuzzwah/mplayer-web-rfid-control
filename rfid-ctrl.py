@@ -18,14 +18,15 @@
 """
 SYNOPSIS
 
-	python main.py [-h,--help] [-l,--log] [--debug]
+	python rfid-ctrl.py [-h,--help] [-l,--log] [--debug]
 
 DESCRIPTION
 
-	This file is the main "engine" for the music playback system.
-	It runs a tornado web server which accepts commands and passes
-	them onto mplayer.	
-
+	Listens for input from an RFID reader. When a card
+	is swiped it checks an sqlite database to find the playlist or 
+	folder which is assigned to the card. Playback of the playlist or 
+	folder of mp3 files in mplayer is triggered.
+	
 AUTHOR
 
 	Robert Crouch (rob.crouch@gmail.com)
@@ -35,7 +36,7 @@ VERSION
 	$Id$
 """
 
-__program__ = "mplayer-web-rfid-control"
+__program__ = "rfid-control"
 __author__ = "Robert Crouch (rob.crouch@gmail.com)"
 __copyright__ = "Copyright (C) 2015- Robert Crouch"
 __license__ = "LGPL 3.0"
@@ -44,48 +45,6 @@ __version__ = "v1.150216"
 import os, sys, argparse, logging, logging.handlers
 import config as cfg    # config related things are in config.py
 						# this import will create a blank config file if it doesn't exist already
-
-import tornado.ioloop, tornado.web, os, json, random, time
-import util, sse, player
-
-class ShowDirectory(tornado.web.RequestHandler):
-    def post(self):
-        try:
-            dir = self.get_argument("dir")
-            assert util.isInRoot(dir)
-            self.write(util.dirToJSON(dir))
-        except:
-            self.write(util.entriesToJSON(cfg.root))
-
-class Play(tornado.web.RequestHandler):
-    def post(self):
-        t = self.get_argument('target')
-        player.commandQueue.put('stop')
-        if os.path.isfile(t):
-            fileList = [t]
-        elif os.path.isdir(t):
-            fileList = util.deepListDir(t)
-        else:
-            fileList = json.loads(t)
-        if self.get_argument('shuffle', False):
-            random.shuffle(fileList)
-        time.sleep(.5)
-        ServerStatus.write_message_to_all(json.dumps(fileList), event="new-queue")
-        self.write("Ok")
-        ServerStatus.newList([util.nameToTitle(f) for f in fileList])
-        [player.playQ.put(f) for f in fileList]
-
-class ServerStatus(sse.FeedHandler): 
-    _msg_timeout = None
-
-class Command(tornado.web.RequestHandler):
-    def post(self):
-        cmd = self.get_argument('command')
-        player.commandQueue.put(cmd)
-
-class Index(tornado.web.RequestHandler):
-    def get(self):
-        self.redirect("/static/index.html", permanent=True)
 
 def parse_args(argv):
 	""" Read in any command line options and return them
@@ -150,21 +109,6 @@ def main(raw_args):
 	# log that we're up and running
 	log.debug('initialized')
 	
-	urls = [(r"/", Index),
-			(r"/show-directory", ShowDirectory),
-			(r"/play", Play),
-			(r"/command", Command),
-			(r"/status", ServerStatus),
-			(r".*", Index)]
-
-	settings = {
-		"static_path": os.path.join(os.path.dirname(__file__), "static")
-		}
-
-	app = tornado.web.Application(urls, **settings)
-
-    app.listen(80)
-    tornado.ioloop.IOLoop.instance().start()
     
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))

@@ -18,13 +18,12 @@
 """
 SYNOPSIS
 
-	python main.py [-h,--help] [-l,--log] [--debug]
+	python addcard.py /full/path/to/directory_or_playlist [-s,--shuffle]
 
 DESCRIPTION
 
-	This file is the main "engine" for the music playback system.
-	It runs a tornado web server which accepts commands and passes
-	them onto mplayer.	
+	Assigns either a directory of mp3 files or a m3u playlist file to
+	an RFID swipe card.
 
 AUTHOR
 
@@ -45,56 +44,17 @@ import os, sys, argparse, logging, logging.handlers
 import config as cfg    # config related things are in config.py
 						# this import will create a blank config file if it doesn't exist already
 
-import tornado.ioloop, tornado.web, os, json, random, time
-import util, sse, player
-
-class ShowDirectory(tornado.web.RequestHandler):
-    def post(self):
-        try:
-            dir = self.get_argument("dir")
-            assert util.isInRoot(dir)
-            self.write(util.dirToJSON(dir))
-        except:
-            self.write(util.entriesToJSON(cfg.root))
-
-class Play(tornado.web.RequestHandler):
-    def post(self):
-        t = self.get_argument('target')
-        player.commandQueue.put('stop')
-        if os.path.isfile(t):
-            fileList = [t]
-        elif os.path.isdir(t):
-            fileList = util.deepListDir(t)
-        else:
-            fileList = json.loads(t)
-        if self.get_argument('shuffle', False):
-            random.shuffle(fileList)
-        time.sleep(.5)
-        ServerStatus.write_message_to_all(json.dumps(fileList), event="new-queue")
-        self.write("Ok")
-        ServerStatus.newList([util.nameToTitle(f) for f in fileList])
-        [player.playQ.put(f) for f in fileList]
-
-class ServerStatus(sse.FeedHandler): 
-    _msg_timeout = None
-
-class Command(tornado.web.RequestHandler):
-    def post(self):
-        cmd = self.get_argument('command')
-        player.commandQueue.put(cmd)
-
-class Index(tornado.web.RequestHandler):
-    def get(self):
-        self.redirect("/static/index.html", permanent=True)
+import sqlite3
+from evdev import InputDevice, categorize, ecodes						
 
 def parse_args(argv):
 	""" Read in any command line options and return them
 	"""
 
 	# Define and parse command line arguments
-	parser = argparse.ArgumentParser(description=__program__)
-	parser.add_argument("-l", "--log", help="file to write log to")
-	parser.add_argument("--debug", action='store_true', default=False)
+	parser = argparse.ArgumentParser(description='Assign a playlist or folder to a card.')
+	parser.add_argument('item', metavar='I', required=True, type=str, nargs='+', help='playlist or folder location')
+	parser.add_argument("-s", "--shuffle", action='store_true')
 	args = parser.parse_args()
 
 	return args
@@ -150,21 +110,55 @@ def main(raw_args):
 	# log that we're up and running
 	log.debug('initialized')
 	
-	urls = [(r"/", Index),
-			(r"/show-directory", ShowDirectory),
-			(r"/play", Play),
-			(r"/command", Command),
-			(r"/status", ServerStatus),
-			(r".*", Index)]
+	# this is the rfid reader
+	dev = InputDevice(cfg.rfidreader)
 
-	settings = {
-		"static_path": os.path.join(os.path.dirname(__file__), "static")
-		}
+	# grab the rfid reader device
+	dev.grab()
 
-	app = tornado.web.Application(urls, **settings)
+	cardnumber = []
 
-    app.listen(80)
-    tornado.ioloop.IOLoop.instance().start()
-    
+	if args.item.find(cfg.playlistpath) > -1:
+		item_type = "playlist"
+	elif args.item.find(cfg.musicbasepath) > -1:
+		item_type = "folder"
+	else:
+		print("%s is in neither the music or playlist paths" % args.item)
+		sys.exit( 1 ) 
+
+	print("Swipe the card you wish to assign to item: %s" % args.item)
+
+	db = sqlite3.connect(cards_db)
+	c = db.cursor()
+
+	# wait for events from the rfid reader
+	for event in dev.read_loop():
+		# if we get a "key pressed down" event
+		if event.type == ecodes.EV_KEY and event.value == 1:
+			# if it is the enter key we've hit the end of a card number
+			if event.code == 28:
+				# merge the list in to a string
+				card = ''.join(str(num) for num in cardnumber)
+
+				# add (or update) the entry 
+				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values (%s, %s, %s, %s)" % (card, args.item, item_type, args.shuffle)
+				c.execute(query)
+				db.commit()
+
+				# let the user know we're all good
+				print("Assigned card {cardnum} playlist {pl}".format(cardnum=card, pl=args.item))
+				# we're done so break out
+				break
+			else:
+				# the event code is 1 more than the actual number key
+				number = event.code - 1
+				# except for event id 10, which is actually KP_0
+				if number == 10:
+					number = 0
+				# stick the number onto the end of our list
+				cardnumber.append(number)
+
+	db.close()   # close db file
+
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
