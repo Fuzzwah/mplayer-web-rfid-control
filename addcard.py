@@ -125,7 +125,7 @@ def main(raw_args):
 	elif args.item[0].find(cfg.config['Paths']['music']) > -1:
 		item_type = "folder"
 	elif args.item[0].find(cfg.config['Paths']['messages']) > -1:
-		item_type = "folder"
+		item_type = "messages"
 	else:
 		print("%s is in neither the music or playlist paths" % args.item[0])
 		sys.exit( 1 ) 
@@ -151,7 +151,7 @@ def main(raw_args):
 				db.commit()
 
 				# let the user know we're all good
-				print("Assigned card {cardnum} playlist {pl}".format(cardnum=card, pl=args.item))
+				print("Assigned card {cardnum} playlist {pl}".format(cardnum=card, pl=args.item[0]))
 				# we're done so break out
 				break
 			else:

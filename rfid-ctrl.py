@@ -166,9 +166,11 @@ def main(raw_args):
 					res = c.fetchone()
 					item = res[0]
 					if res[1] == "playlist":
-						item_path = "%s/%s" % (cfg.config['Paths']['playlist'], item)
+						item_path = "%s/%s" % (cfg.config['Paths']['playlists'], item)
 					elif res[1] == "folder":
 						item_path = "%s/%s" % (cfg.config['Paths']['music'], item)
+					elif res[1] == "message":
+						item_path = "%s/%s" % (cfg.config['Paths']['messages'], item)
 					shuffle = res[2]
 					print "Card {c} is assigned to {p}".format(c=card, p=item_path)
 					playfile(item_path, shuffle)
