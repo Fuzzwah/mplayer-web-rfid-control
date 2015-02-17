@@ -150,7 +150,10 @@ def main(raw_args):
 	# log that we're up and running
 	log.debug('initialized')
 	playfile("%s/initialized.mp3" % cfg.config['Paths']['messages'])
-
+    
+if __name__ == '__main__':
+	main(sys.argv)
+	
 	# wait for events from the rfid reader
 	for event in dev.read_loop():
 		# if we get a "key pressed down" event
@@ -191,6 +194,5 @@ def main(raw_args):
 			
 	# close the cards database file
 	db.close()
-    
-if __name__ == '__main__':
-	sys.exit(main(sys.argv))
+	
+	
