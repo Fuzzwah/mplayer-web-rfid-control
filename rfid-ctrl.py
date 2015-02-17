@@ -143,11 +143,6 @@ def main(raw_args):
 	try:
 		db = sqlite3.connect(cfg.config['System']['database'])
 		c = db.cursor()
-		c.execute('SELECT SQLITE_VERSION()')
-    
-    data = cur.fetchone()
-    
-    print "SQLite version: %s" % data  		
 	except IOError:
 		print "Database could not be opened"
 		playfile("%s/db_failed.mp3" % cfg.config['Paths']['messages'])
@@ -167,10 +162,9 @@ def main(raw_args):
 				# get the playlist which is assigned to this card number
 				# if it doesn't have one assigned, set up the error message flag
 				query = "SELECT item, type, shuffle FROM Cards WHERE cardnum = '%s'" % card
-				print(query)
+				c.execute(query)
 				try:
 					res = c.fetchone()
-					print(res)
 					item = res[0]
 					if res[1] == "playlist":
 						item_path = "%s/%s" % (cfg.config['Paths']['playlists'], item)
