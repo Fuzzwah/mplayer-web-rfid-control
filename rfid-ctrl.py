@@ -143,6 +143,11 @@ def main(raw_args):
 	try:
 		db = sqlite3.connect(cfg.config['System']['database'])
 		c = db.cursor()
+		c.execute('SELECT SQLITE_VERSION()')
+    
+    data = cur.fetchone()
+    
+    print "SQLite version: %s" % data  		
 	except IOError:
 		print "Database could not be opened"
 		playfile("%s/db_failed.mp3" % cfg.config['Paths']['messages'])
