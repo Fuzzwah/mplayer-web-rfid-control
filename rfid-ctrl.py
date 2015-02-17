@@ -63,7 +63,7 @@ def playfile(fn, shuf = False):
 		r = requests.post(webmoteurl, data=params, headers=myheaders)
 		if not r.status_code == requests.codes.ok:
 			print r.status_code
-		sys.exit( 1 ) 
+			sys.exit( 1 ) 
 	else:
 		print "Playback: File (%s) could not be opened" % fn
 
@@ -150,10 +150,7 @@ def main(raw_args):
 	# log that we're up and running
 	log.debug('initialized')
 	playfile("%s/initialized.mp3" % cfg.config['Paths']['messages'])
-    
-if __name__ == '__main__':
-	main(sys.argv)
-	
+
 	# wait for events from the rfid reader
 	for event in dev.read_loop():
 		# if we get a "key pressed down" event
@@ -194,5 +191,6 @@ if __name__ == '__main__':
 			
 	# close the cards database file
 	db.close()
-	
-	
+    
+if __name__ == '__main__':
+	sys.exit(main(sys.argv))
