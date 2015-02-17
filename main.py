@@ -156,6 +156,7 @@ def main(raw_args):
 
 	# log that we're up and running
 	log.debug('initialized')
+	print('initialized')
 	
 	urls = [(r"/", Index),
 			(r"/show-directory", ShowDirectory),
