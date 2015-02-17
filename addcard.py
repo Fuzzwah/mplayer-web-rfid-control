@@ -124,6 +124,8 @@ def main(raw_args):
 		item_type = "playlist"
 	elif args.item[0].find(cfg.config['Paths']['music']) > -1:
 		item_type = "folder"
+	elif args.item[0].find(cfg.config['Paths']['messages']) > -1:
+		item_type = "folder"
 	else:
 		print("%s is in neither the music or playlist paths" % args.item)
 		sys.exit( 1 ) 
