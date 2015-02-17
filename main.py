@@ -163,8 +163,8 @@ def main(raw_args):
 
 	app = tornado.web.Application(urls, **settings)
 
-  app.listen(cfg.config['System']['port'])
-  tornado.ioloop.IOLoop.instance().start()
+	app.listen(cfg.config['System']['port'])
+	tornado.ioloop.IOLoop.instance().start()
     
 if __name__ == '__main__':
   sys.exit(main(sys.argv))
