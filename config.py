@@ -11,9 +11,9 @@ if not os.path.isfile(__file__):
 	config.filename = __file__
 
 	config['Paths'] = {}
-	config['Paths']['music'] = ''
-	config['Paths']['playlists'] = ''
-	config['Paths']['messages'] = ''
+	config['Paths']['music'] = '/media/Music/music'
+	config['Paths']['playlists'] = '/home/pi/playlists'
+	config['Paths']['messages'] = '/home/pi/mplayer-web-rfid-control/messages'
 	
 	config['System'] = {}
 	config['System']['port'] = '8080'
