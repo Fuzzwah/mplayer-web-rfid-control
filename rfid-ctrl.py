@@ -162,6 +162,7 @@ def main(raw_args):
 				# get the playlist which is assigned to this card number
 				# if it doesn't have one assigned, set up the error message flag
 				query = "SELECT item, type, shuffle FROM Cards WHERE cardnum = '%s'" % card
+				print(query)
 				try:
 					res = c.fetchone()
 					print(res)
