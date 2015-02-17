@@ -46,6 +46,7 @@ import os, sys, argparse, logging, logging.handlers
 import config as cfg    # config related things are in config.py
 						# this import will create a blank config file if it doesn't exist already
 
+import sqlite3
 import requests
 from evdev import InputDevice, categorize, ecodes
 import util, sse, player
