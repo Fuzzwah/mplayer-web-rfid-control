@@ -173,7 +173,6 @@ def main(raw_args):
 					elif res[1] == "message":
 						item_path = "%s/%s" % (cfg.config['Paths']['messages'], item)
 					shuffle = res[2]
-					print "Card {c} is assigned to {p}".format(c=card, p=item_path)
 					playfile(item_path, shuffle)
 
 				except:

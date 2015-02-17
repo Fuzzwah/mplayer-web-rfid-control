@@ -148,8 +148,6 @@ def main(raw_args):
 	# read in our config file
 	cfg.read(cfg.__file__)
 	
-	print(cfg.config['System']['root'])
-
 	# Ensure that the database has the required table
 	db = sqlite3.connect(cfg.config['System']['database'])
 	c = db.cursor()
@@ -158,7 +156,6 @@ def main(raw_args):
 
 	# log that we're up and running
 	log.debug('initialized')
-	print('initialized')
 	
 	urls = [(r"/", Index),
 			(r"/show-directory", ShowDirectory),
