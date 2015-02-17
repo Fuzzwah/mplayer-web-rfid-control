@@ -127,10 +127,10 @@ def main(raw_args):
 	elif args.item[0].find(cfg.config['Paths']['messages']) > -1:
 		item_type = "folder"
 	else:
-		print("%s is in neither the music or playlist paths" % args.item)
+		print("%s is in neither the music or playlist paths" % args.item[0])
 		sys.exit( 1 ) 
 
-	print("Swipe the card you wish to assign to item: %s" % args.item)
+	print("Swipe the card you wish to assign to item: %s" % args.item[0])
 
 	db = sqlite3.connect(cfg.config['System']['database'])
 	c = db.cursor()
@@ -145,7 +145,7 @@ def main(raw_args):
 				card = ''.join(str(num) for num in cardnumber)
 
 				# add (or update) the entry 
-				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values ('%s', '%s', '%s', '%s')" % (card, args.item, item_type, args.shuffle)
+				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values ('%s', '%s', '%s', '%s')" % (card, args.item[0], item_type, args.shuffle)
 				print(query)
 				c.execute(query)
 				db.commit()
