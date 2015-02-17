@@ -46,6 +46,26 @@ import os, sys, argparse, logging, logging.handlers
 import config as cfg    # config related things are in config.py
 						# this import will create a blank config file if it doesn't exist already
 
+import requests
+from evdev import InputDevice, categorize, ecodes
+import util, sse, player
+
+def playfile(fn, shuf = False):
+	if os.path.exists("%s" % fn):
+		print "Playing: %s" % fn
+		if shuf:
+			params = {'command': 'play', 'shuffle': True, 'target': "%s" % fn}
+		else:
+			params = {'command': 'play', 'shuffle': True, 'target': "%s" % fn}
+		webmoteurl = 'http://localhost:8080/play'
+		myheaders = {'User-Agent': 'Mozilla/5.0'}
+		r = requests.post(webmoteurl, data=params, headers=myheaders)
+		if not r.status_code == requests.codes.ok:
+			print r.status_code
+		sys.exit( 1 ) 
+	else:
+		print "Playback: File (%s) could not be opened" % fn
+
 def parse_args(argv):
 	""" Read in any command line options and return them
 	"""
@@ -106,9 +126,70 @@ def main(raw_args):
 	# read in our config file
 	cfg.read(cfg.__file__)
 
+	dev = InputDevice(cfg.config['System']['rfidreader'])
+
+	# grab the rfid reader device
+	try:
+		dev.grab()
+	except:
+		print "Unable to grab card reader"
+		playfile("%s/grab_failed.mp3" % messagepath)
+
+	# create an empty list for the card number
+	cardnumber = []
+
+	# connect to our database
+	try:
+		db = sqlite3.connect(cfg.config['System']['database'])
+		c = db.cursor()
+	except IOError:
+		print "Database could not be opened"
+		playfile("%s/db_failed.mp3" % messagepath)
+
 	# log that we're up and running
 	log.debug('initialized')
-	
+	playfile("%s/initialized.mp3" % messagepath)
+
+	# wait for events from the rfid reader
+	for event in dev.read_loop():
+		# if we get a "key pressed down" event
+		if event.type == ecodes.EV_KEY and event.value == 1:
+			# if it is the enter key we've hit the end of a card number
+			if event.code == 28:
+				# merge the list in to a string
+				card = ''.join(str(num) for num in cardnumber)
+				# get the playlist which is assigned to this card number
+				# if it doesn't have one assigned, set up the error message flag
+				query = "SELECT item, type, shuffle FROM Cards WHERE cardnum = '%s'" % card
+				try:
+					res = c.fetchone()
+					item = res[0]
+					if res[1] == "playlist":
+						item_path = "%s/%s" % (cfg.config['Paths']['playlist'], item)
+					elif res[1] == "folder":
+						item_path = "%s/%s" % (cfg.config['Paths']['music'], item)
+					shuffle = res[2]
+					print "Card {c} is assigned to {p}".format(c=card, p=item_path)
+					playfile(item_path, shuffle)
+
+				except:
+					# if the card didn't have a playlist assigned, trigger error sound and log it
+					playfile("%s/unassigned.mp3" % cfg.config['Paths']['music'])
+					print "Card {c} has no item assigned".format(c=card)
+
+				# empty out our list to be ready for the next swipe
+				cardnumber = []
+			else:
+				# the event code is 1 more than the actual number key
+				number = event.code - 1
+				# except for event id 10, which is actually KP_0
+				if number == 10:
+					number = 0
+				# stick the number onto the end of our list
+				cardnumber.append(number)
+			
+	# close the cards database file
+	db.close()
     
 if __name__ == '__main__':
 	sys.exit(main(sys.argv))
