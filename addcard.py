@@ -145,7 +145,8 @@ def main(raw_args):
 				card = ''.join(str(num) for num in cardnumber)
 
 				# add (or update) the entry 
-				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values (%s, %s, %s, %s)" % (card, args.item, item_type, args.shuffle)
+				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values ('%s', '%s', '%s', '%s')" % (card, args.item, item_type, args.shuffle)
+				print(query)
 				c.execute(query)
 				db.commit()
 
