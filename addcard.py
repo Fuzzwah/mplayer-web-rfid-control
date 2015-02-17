@@ -120,7 +120,7 @@ def main(raw_args):
 
 	cardnumber = []
 
-	if args.item[0].find(cfg.config['Paths']['playlist']) > -1:
+	if args.item[0].find(cfg.config['Paths']['playlists']) > -1:
 		item_type = "playlist"
 	elif args.item[0].find(cfg.config['Paths']['music']) > -1:
 		item_type = "folder"
