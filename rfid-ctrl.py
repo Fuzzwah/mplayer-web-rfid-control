@@ -57,8 +57,8 @@ def playfile(fn, shuf = False):
 		if shuf:
 			params = {'command': 'play', 'shuffle': True, 'target': "%s" % fn}
 		else:
-			params = {'command': 'play', 'shuffle': True, 'target': "%s" % fn}
-		webmoteurl = 'http://localhost:8080/play'
+			params = {'command': 'play', 'target': "%s" % fn}
+		webmoteurl = "http://localhost:%s/play" % cfg.config['System']['port']
 		myheaders = {'User-Agent': 'Mozilla/5.0'}
 		r = requests.post(webmoteurl, data=params, headers=myheaders)
 		if not r.status_code == requests.codes.ok:
