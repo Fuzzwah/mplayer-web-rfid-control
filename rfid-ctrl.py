@@ -164,6 +164,7 @@ def main(raw_args):
 				query = "SELECT item, type, shuffle FROM Cards WHERE cardnum = '%s'" % card
 				try:
 					res = c.fetchone()
+					print(res)
 					item = res[0]
 					if res[1] == "playlist":
 						item_path = "%s/%s" % (cfg.config['Paths']['playlists'], item)
@@ -177,7 +178,7 @@ def main(raw_args):
 
 				except:
 					# if the card didn't have a playlist assigned, trigger error sound and log it
-					playfile("%s/unassigned.mp3" % cfg.config['Paths']['music'])
+					playfile("%s/unassigned.mp3" % cfg.config['Paths']['messages'])
 					print "Card {c} has no item assigned".format(c=card)
 
 				# empty out our list to be ready for the next swipe
