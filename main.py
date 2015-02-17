@@ -147,6 +147,12 @@ def main(raw_args):
 	# read in our config file
 	cfg.read(cfg.__file__)
 
+	# Ensure that the database has the required table
+	db = sqlite3.connect(cards_db)
+	c = db.cursor()
+	query = "CREATE TABLE IF NOT EXISTS Cards (cardnum TEXT	PRIMARY KEY	NOT NULL, item TEXT, type TEXT, shuffle INT)"
+	c.execute(query)
+
 	# log that we're up and running
 	log.debug('initialized')
 	
