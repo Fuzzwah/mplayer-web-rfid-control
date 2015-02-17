@@ -19,6 +19,7 @@ if not os.path.isfile(__file__):
 	config['System']['port'] = '8080'
 	config['System']['rfidreader'] = '/dev/input/event0'
 	config['System']['database'] = 'cards.sqlite'
+	config['System']['root'] = [config['Paths']['music'], config['Paths']['playlists'], config['Paths']['messages']]
 	config.write()
 	
 def read(configfile):
@@ -27,7 +28,6 @@ def read(configfile):
 	# try to read in the config
 	try:
 		config = configobj.ConfigObj(configfile)
-		root = [config['Paths']['music'], config['Paths']['playlists'], config['Paths']['messages']]
 		
 	except (IOError, KeyError, AttributeError) as e:
 		print("Unable to successfully read config file: %s" % configfile)

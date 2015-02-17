@@ -56,7 +56,7 @@ class ShowDirectory(tornado.web.RequestHandler):
             assert util.isInRoot(dir)
             self.write(util.dirToJSON(dir))
         except:
-            self.write(util.entriesToJSON(cfg.root))
+            self.write(util.entriesToJSON(cfg.config['System']['root']))
 
 class Play(tornado.web.RequestHandler):
     def post(self):
@@ -147,6 +147,8 @@ def main(raw_args):
 
 	# read in our config file
 	cfg.read(cfg.__file__)
+	
+	print(cfg.config['System']['root'])
 
 	# Ensure that the database has the required table
 	db = sqlite3.connect(cfg.config['System']['database'])

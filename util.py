@@ -23,7 +23,7 @@ def isIn(entry, directory):
     return os.path.commonprefix([e, d]) == d
 
 def isInRoot(entry):
-    for path in cfg.root:
+    for path in cfg.config['System']['root']:
         if isIn(entry, path):
             return True
     return False
@@ -58,7 +58,7 @@ def dirToJSON(directory):
     entries = entriesToDicts(
         map(lambda p: os.path.join(directory, p), 
             sorted(os.listdir(directory))))
-    if directory in cfg.root:
+    if directory in cfg.config['System']['root']:
         entries.insert(0, {'path': "root", 'name': "..", 'type': "return"})
     else:
         entries.insert(0, {'path': os.path.dirname(directory), 'name': "..", 'type': "return"})
