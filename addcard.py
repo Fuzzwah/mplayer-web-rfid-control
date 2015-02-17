@@ -55,6 +55,8 @@ def parse_args(argv):
 	parser = argparse.ArgumentParser(description='Assign a playlist or folder to a card.')
 	parser.add_argument('item', metavar='I', type=str, nargs='+', help='playlist or folder location')
 	parser.add_argument("-s", "--shuffle", action='store_true')
+	parser.add_argument("-l", "--log", help="file to write log to")
+	parser.add_argument("--debug", action='store_true', default=False)
 	args = parser.parse_args()
 
 	return args
