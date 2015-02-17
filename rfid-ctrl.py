@@ -134,7 +134,7 @@ def main(raw_args):
 		dev.grab()
 	except:
 		print "Unable to grab card reader"
-		playfile("%s/grab_failed.mp3" % messagepath)
+		playfile("%s/grab_failed.mp3" % cfg.config['Paths']['messages'])
 
 	# create an empty list for the card number
 	cardnumber = []
@@ -145,11 +145,11 @@ def main(raw_args):
 		c = db.cursor()
 	except IOError:
 		print "Database could not be opened"
-		playfile("%s/db_failed.mp3" % messagepath)
+		playfile("%s/db_failed.mp3" % cfg.config['Paths']['messages'])
 
 	# log that we're up and running
 	log.debug('initialized')
-	playfile("%s/initialized.mp3" % messagepath)
+	playfile("%s/initialized.mp3" % cfg.config['Paths']['messages'])
 
 	# wait for events from the rfid reader
 	for event in dev.read_loop():
