@@ -11,8 +11,8 @@
 ### END INIT INFO
 
 # Configure these:
-DIR=/home/pi/rfid-music/
-DAEMON_USER=pi
+DIR=/home/pi/mplayer-web-rfid-control
+DAEMON_USER=root
 # End of Config
 
 WEB_DAEMON=$DIR/main.py
@@ -26,11 +26,11 @@ RFID_PIDFILE=/var/run/$RFID_DAEMON_NAME.pid
  
 do_start () {
     log_daemon_msg "Starting system $WEB_DAEMON_NAME daemon"
-    start-stop-daemon --start --background --pidfile $WEB_PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas $WEB_DAEMON
+    start-stop-daemon --start --background --pidfile $WEB_PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas /bin/bash -- -c "exec $WEB_DAEMON > $DIR/mplayer-web.log 2>&1"
     log_end_msg $?
 
     log_daemon_msg "Starting system $RFID_DAEMON_NAME daemon"
-    start-stop-daemon --start --background --pidfile $RFID_PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas $RFID_DAEMON
+    start-stop-daemon --start --background --pidfile $RFID_PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas /bin/bash -- -c "exec $WEB_DAEMON > $DIR/mplayer-web.log 2>&1"
     log_end_msg $?
 }
 do_stop () {
@@ -55,8 +55,8 @@ case "$1" in
         ;;
  
     status)
-        status_of_proc "$WEB_DAEMON_NAME" "$WEB_DAEMON" && exit 0 || exit $?
-        status_of_proc "$RFID_DAEMON_NAME" "$RFID_DAEMON" && exit 0 || exit $?
+        status_of_proc "$WEB_DAEMON_NAME" "$WEB_DAEMON"
+        status_of_proc "$RFID_DAEMON_NAME" "$RFID_DAEMON"
         ;;
     *)
         echo "Usage: /etc/init.d/mplayer-web-rfid-control {start|stop|restart|status}"

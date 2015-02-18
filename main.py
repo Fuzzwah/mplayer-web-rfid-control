@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 #   This program is free software; you can redistribute it and/or modify
@@ -116,7 +116,7 @@ def setup_logging(args):
 	if args.debug:
 		LOG_LEVEL = logging.DEBUG
 	else:
-		LOG_LEVEL = logging.INFO  # Could be e.g. "DEBUG" or "WARNING"
+		LOG_LEVEL = logging.DEBUG  # Could be e.g. "DEBUG" or "WARNING"
 
 	# Configure logging to log to a file, making a new file at midnight and keeping the last 3 day's data
 	# Give the logger a unique name (good practice)
@@ -154,9 +154,6 @@ def main(raw_args):
 	query = "CREATE TABLE IF NOT EXISTS Cards (cardnum TEXT	PRIMARY KEY	NOT NULL, item TEXT, type TEXT, shuffle INT)"
 	c.execute(query)
 
-	# log that we're up and running
-	log.debug('initialized')
-	
 	urls = [(r"/", Index),
 			(r"/show-directory", ShowDirectory),
 			(r"/play", Play),
@@ -170,8 +167,14 @@ def main(raw_args):
 
 	app = tornado.web.Application(urls, **settings)
 
+	# log that we're up and running
+	log.debug('kicking off tornado loop....')
+
 	app.listen(cfg.config['System']['port'])
 	tornado.ioloop.IOLoop.instance().start()
-    
+	
+	log.debug('why are we here?')
+	
+  
 if __name__ == '__main__':
   sys.exit(main(sys.argv))
