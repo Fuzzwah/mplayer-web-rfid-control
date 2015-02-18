@@ -151,7 +151,7 @@ def main(raw_args):
 	# Ensure that the database has the required table
 	db = sqlite3.connect(cfg.config['System']['database'])
 	c = db.cursor()
-	query = "CREATE TABLE IF NOT EXISTS Cards (cardnum TEXT	PRIMARY KEY	NOT NULL, item TEXT, type TEXT, shuffle INT)"
+	query = "CREATE TABLE IF NOT EXISTS Cards (cardnum TEXT	PRIMARY KEY	NOT NULL, item TEXT, type TEXT, shuffle TEXT)"
 	c.execute(query)
 
 	urls = [(r"/", Index),
@@ -177,4 +177,4 @@ def main(raw_args):
 	
   
 if __name__ == '__main__':
-  sys.exit(main(sys.argv))
+	sys.exit(main(sys.argv))

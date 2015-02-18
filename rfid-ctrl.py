@@ -51,10 +51,10 @@ import requests
 from evdev import InputDevice, categorize, ecodes
 import util, sse, player
 
-def playfile(fn, shuf = False):
+def playfile(fn, shuffle=False):
 	if os.path.exists("%s" % fn):
 		print "Playing: %s" % fn
-		if shuf:
+		if shuffle:
 			params = {'command': 'play', 'shuffle': True, 'target': "%s" % fn}
 		else:
 			params = {'command': 'play', 'target': "%s" % fn}
