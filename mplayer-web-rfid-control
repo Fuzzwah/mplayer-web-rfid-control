@@ -30,7 +30,7 @@ do_start () {
     log_end_msg $?
 
     log_daemon_msg "Starting system $RFID_DAEMON_NAME daemon"
-    start-stop-daemon --start --background --pidfile $RFID_PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas /bin/bash -- -c "exec $WEB_DAEMON > $DIR/mplayer-web.log 2>&1"
+    start-stop-daemon --start --background --pidfile $RFID_PIDFILE --make-pidfile --user $DAEMON_USER --chuid $DAEMON_USER --startas /bin/bash -- -c "exec $RFID_DAEMON > $DIR/mplayer-rfid.log 2>&1"
     log_end_msg $?
 }
 do_stop () {

@@ -162,9 +162,11 @@ def main(raw_args):
 				# get the playlist which is assigned to this card number
 				# if it doesn't have one assigned, set up the error message flag
 				query = "SELECT item, type, shuffle FROM Cards WHERE cardnum = '%s'" % card
-				c.execute(query)
+				print(query)
+				c.execute(query) 
 				try:
 					res = c.fetchone()
+					print(res)
 					item = res[0]
 					if res[1] == "playlist":
 						item_path = "%s/%s" % (cfg.config['Paths']['playlists'], item)
