@@ -121,16 +121,19 @@ def main(raw_args):
 	cardnumber = []
 
 	if args.item[0].find(cfg.config['Paths']['playlists']) > -1:
+		item = args.item[0][len(cfg.config['Paths']['playlists']):]
 		item_type = "playlist"
 	elif args.item[0].find(cfg.config['Paths']['music']) > -1:
+		item = args.item[0][len(cfg.config['Paths']['music']):]
 		item_type = "folder"
 	elif args.item[0].find(cfg.config['Paths']['messages']) > -1:
+		item = args.item[0][len(cfg.config['Paths']['messages']):]
 		item_type = "messages"
 	else:
 		print("%s is in neither the music or playlist paths" % args.item[0])
 		sys.exit( 1 ) 
 
-	print("Swipe the card you wish to assign to item: %s" % args.item[0])
+	print("Swipe the card you wish to assign to item: %s" % item.strip("/"))
 
 	db = sqlite3.connect(cfg.config['System']['database'])
 	c = db.cursor()
@@ -145,13 +148,12 @@ def main(raw_args):
 				card = ''.join(str(num) for num in cardnumber)
 
 				# add (or update) the entry 
-				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values ('%s', '%s', '%s', '%s')" % (card, args.item[0], item_type, args.shuffle)
-				print(query)
+				query = "INSERT OR REPLACE INTO Cards (cardnum, item, type, shuffle) values ('%s', '%s', '%s', '%s')" % (card, item.strip("/"), item_type, args.shuffle)
 				c.execute(query)
 				db.commit()
 
 				# let the user know we're all good
-				print("Assigned card {cardnum} playlist {pl}".format(cardnum=card, pl=args.item[0]))
+				print("Assigned card {cardnum} playlist {pl}".format(cardnum=card, pl=item.strip("/")))
 				# we're done so break out
 				break
 			else:
