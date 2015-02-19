@@ -146,7 +146,7 @@ def main(raw_args):
 	log = logging.getLogger(__name__)
 
 	# read in our config file
-	cfg.read(cfg.__file__)
+	cfg.read(cfg.cfgfile)
 	
 	# Ensure that the database has the required table
 	db = sqlite3.connect(cfg.config['System']['database'])

@@ -125,7 +125,7 @@ def main(raw_args):
 	log = logging.getLogger(__name__)
 
 	# read in our config file
-	cfg.read(cfg.__file__)
+	cfg.read(cfg.cfgfile)
 
 	dev = InputDevice(cfg.config['System']['rfidreader'])
 

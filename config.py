@@ -4,11 +4,12 @@
 import os, sys, configobj
 import sqlite3
 
-__file__ = "config.ini"
+script_path = os.path.dirname(os.path.abspath(__file__))
+cfgfile = "%s/config.ini" % script_path
 
-if not os.path.isfile(__file__):
+if not os.path.isfile(cfgfile):
 	config = configobj.ConfigObj()
-	config.filename = __file__
+	config.filename = cfgfile
 
 	config['Paths'] = {}
 	config['Paths']['music'] = '/media/Music/music'
@@ -18,16 +19,16 @@ if not os.path.isfile(__file__):
 	config['System'] = {}
 	config['System']['port'] = '8080'
 	config['System']['rfidreader'] = '/dev/input/event0'
-	config['System']['database'] = 'cards.sqlite'
+	config['System']['database'] = "%s/cards.sqlite" % script_path
 	config['System']['root'] = [config['Paths']['music'], config['Paths']['playlists'], config['Paths']['messages']]
 	config.write()
 	
-def read(configfile):
+def read(cfgfile):
 	global config
 
 	# try to read in the config
 	try:
-		config = configobj.ConfigObj(configfile)
+		config = configobj.ConfigObj(cfgfile)
 		
 	except (IOError, KeyError, AttributeError) as e:
-		print("Unable to successfully read config file: %s" % configfile)
+		print("Unable to successfully read config file: %s" % cfgfile)
