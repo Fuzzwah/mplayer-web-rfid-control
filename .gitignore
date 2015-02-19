@@ -1,5 +1,3 @@
-config.ini
-
 geany_run_script.bat
 *.geany
 
@@ -9,6 +7,7 @@ test.py
 *.sqlite
 *.sqlite-journal
 *.log
+*.log.*
 *.pywc
 *.pyc
 *.swp
